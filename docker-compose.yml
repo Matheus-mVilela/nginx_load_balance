@@ -1,0 +1,83 @@
+version: "3"
+services:
+
+  nginx:
+    build:
+      dockerfile: ./balancer/Dockerfile
+      context: .
+    image: nginx_balancer
+    container_name: nginx_balancer
+    volumes:
+      - ./balancer:/balancer
+    ports:
+      - "80:80"
+    networks:
+      - main_network
+    depends_on:
+      - "backend_1"
+      - "backend_2"
+      - "backend_3"
+
+  backend_1:
+    build:
+      dockerfile: ./app/Dockerfile
+      context: .
+    image: backend_django_ex
+    container_name: backend_django_ex_1
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000"
+    networks:
+      - main_network
+    depends_on:
+      - "db"
+
+  backend_2:
+    build:
+      dockerfile: ./app/Dockerfile
+      context: .
+    image: backend_django_ex
+    container_name: backend_django_ex_2
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000"
+    networks:
+      - main_network
+    depends_on:
+      - "db"
+
+  backend_3:
+    build:
+      dockerfile: ./app/Dockerfile
+      context: .
+    image: backend_django_ex
+    container_name: backend_django_ex_3
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000"
+    networks:
+      - main_network
+    depends_on:
+      - "db"
+
+  db:
+    build:
+      dockerfile: ./postgres/Dockerfile
+      context: .
+    image: db_django_ex
+    container_name: db_django_ex
+    volumes:
+      - ./postgres:/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - main_network
+    environment:
+      POSTGRES_PASSWORD: root
+
+networks:
+  main_network:
+    driver: bridge
